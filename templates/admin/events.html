@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Events – Admin{% endblock %}
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-label">Admin Panel</li>
+            <li><a href="{{ url_for('admin.dashboard') }}"><span class="icon">⚡</span> Dashboard</a></li>
+            <li><a href="{{ url_for('admin.students') }}"><span class="icon">🎓</span> Students</a></li>
+            <li><a href="{{ url_for('admin.chatbot_qa') }}"><span class="icon">🤖</span> Chatbot Q&A</a></li>
+            <li><a href="{{ url_for('admin.notifications') }}"><span class="icon">🔔</span> Notifications</a></li>
+            <li><a href="{{ url_for('admin.events') }}" class="active"><span class="icon">🎉</span> Events</a></li>
+            <li><a href="{{ url_for('main.logout') }}" style="color:#f87171"><span class="icon">🚪</span> Logout</a></li>
+        </ul>
+    </aside>
+    <div class="main-content">
+        <div class="page-title">🎉 Events Management</div>
+
+        <!-- ADD EVENT FORM -->
+        <div class="card mb-3">
+            <div class="card-header">➕ Add New Event</div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.add_event') }}">
+                    <div class="grid-2">
+                        <div class="form-group" style="grid-column:1/-1">
+                            <label class="form-label">Event Title</label>
+                            <input type="text" name="title" class="form-control" required>
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" class="form-control" rows="2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Date</label>
+                            <input type="date" name="date" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Time</label>
+                            <input type="text" name="time" class="form-control" placeholder="e.g. 9:00 AM">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Venue</label>
+                            <input type="text" name="venue" class="form-control" placeholder="e.g. Main Auditorium">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Category</label>
+                            <select name="category" class="form-control">
+                                <option value="technical">Technical</option>
+                                <option value="cultural">Cultural</option>
+                                <option value="sports">Sports</option>
+                                <option value="placement">Placement</option>
+                                <option value="academic">Academic</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="grid-column:1/-1">
+                            <label class="form-label">Registration Link (optional)</label>
+                            <input type="url" name="registration_link" class="form-control" placeholder="https://...">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-green">➕ Add Event</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- EVENTS LIST -->
+        <div class="card">
+            <div class="card-header">📋 All Events</div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Title</th><th>Date</th><th>Venue</th><th>Category</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for event in events %}
+                            <tr>
+                                <td><strong>{{ event.title }}</strong></td>
+                                <td>{{ event.date }}</td>
+                                <td>{{ event.venue }}</td>
+                                <td><span class="badge badge-blue">{{ event.category }}</span></td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('admin.delete_event', event_id=event._id) }}" id="evt_{{ event._id }}">
+                                        <button type="button" class="btn btn-red btn-xs" onclick="confirmDelete('evt_{{ event._id }}', '{{ event.title }}')">🗑</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

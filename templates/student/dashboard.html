@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard – BCOE{% endblock %}
+{% block content %}
+
+<div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-label">Navigation</li>
+            <li><a href="{{ url_for('student.dashboard') }}"><span class="icon">🏠</span> Dashboard</a></li>
+            <li><a href="{{ url_for('student.profile') }}"><span class="icon">👤</span> My Profile</a></li>
+            <li><a href="{{ url_for('student.results') }}"><span class="icon">📊</span> Results & Marks</a></li>
+            <li><a href="{{ url_for('student.attendance') }}"><span class="icon">📈</span> Attendance</a></li>
+            <li><a href="{{ url_for('student.timetable') }}"><span class="icon">📅</span> Timetable</a></li>
+            <li class="menu-label">Quick Actions</li>
+            <li><a href="{{ url_for('student.result_pdf') }}"><span class="icon">📄</span> Download Results PDF</a></li>
+            <li class="menu-label">Account</li>
+            <li><a href="{{ url_for('main.logout') }}" style="color:#f87171"><span class="icon">🚪</span> Logout</a></li>
+        </ul>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-content">
+        <!-- GREETING HEADER -->
+        <div class="profile-header mb-3">
+            <div class="profile-avatar">{{ student.name[0] }}</div>
+            <div>
+                <h2 style="font-size:1.5rem;font-weight:800">Welcome, {{ student.name }}! 👋</h2>
+                <p style="color:#bfdbfe">{{ student.roll_number }} | {{ student.branch }} | Year {{ student.year }}, Sem {{ student.semester }}</p>
+                <p style="color:#93c5fd;font-size:0.85rem">CGPA: {{ student.cgpa }} | Class: {{ student.timetable_class }}</p>
+            </div>
+        </div>
+
+        <!-- STATS -->
+        <div class="grid-4 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon blue">📊</div>
+                <div class="stat-info">
+                    <div class="value">{{ student.cgpa }}</div>
+                    <div class="label">Current CGPA</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">📈</div>
+                <div class="stat-info">
+                    {% set avg_att = (student.attendance.values()|list|sum / student.attendance|length)|round(1) if student.attendance else 0 %}
+                    <div class="value">{{ avg_att }}%</div>
+                    <div class="label">Avg Attendance</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">📅</div>
+                <div class="stat-info">
+                    <div class="value">{{ student.exam_schedule|length }}</div>
+                    <div class="label">Upcoming Exams</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple">🏆</div>
+                <div class="stat-info">
+                    <div class="value">{{ student.activities|length }}</div>
+                    <div class="label">Activities</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <!-- NOTIFICATIONS -->
+            <div class="card">
+                <div class="card-header">🔔 Notifications</div>
+                <div class="card-body">
+                    {% for notif in notifications[:5] %}
+                    <div class="notification-item {% if notif.important %}important{% endif %}">
+                        <h5>{% if notif.important %}🔴{% else %}🔵{% endif %} {{ notif.title }}</h5>
+                        <p>{{ notif.message[:100] }}...</p>
+                    </div>
+                    {% else %}
+                    <p style="color:var(--text-muted)">No notifications.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- UPCOMING EXAMS -->
+            <div class="card">
+                <div class="card-header">📝 Exam Schedule</div>
+                <div class="card-body">
+                    {% for exam in student.exam_schedule %}
+                    <div class="flex items-center justify-between" style="padding:10px 0;border-bottom:1px solid var(--border)">
+                        <div>
+                            <div style="font-weight:700;font-size:0.9rem">{{ exam.subject }}</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted)">📍 Room {{ exam.room }}</div>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="badge badge-blue">{{ exam.date }}</div>
+                            <div style="font-size:0.78rem;color:var(--text-muted)">{{ exam.time }}</div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p style="color:var(--text-muted)">No exam schedule available.</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- ATTENDANCE SUMMARY -->
+            <div class="card">
+                <div class="card-header">📈 Attendance Summary</div>
+                <div class="card-body">
+                    {% for subject, pct in student.attendance.items() %}
+                    <div style="margin-bottom:14px">
+                        <div class="flex justify-between mb-1" style="font-size:0.85rem">
+                            <span style="font-weight:600">{{ subject }}</span>
+                            <span class="badge {% if pct >= 80 %}badge-green{% elif pct >= 65 %}badge-yellow{% else %}badge-red{% endif %}">{{ pct }}%</span>
+                        </div>
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar" data-width="{{ pct }}" style="width:0%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- UPCOMING EVENTS -->
+            <div class="card">
+                <div class="card-header">🎉 Upcoming Events</div>
+                <div class="card-body">
+                    {% for event in events %}
+                    <div class="event-card">
+                        <div class="event-date">📅 {{ event.date }} | 📍 {{ event.venue }}</div>
+                        <div class="event-title">{{ event.title }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- PROJECTS & INTERNSHIPS -->
+        <div class="grid-2 mt-3">
+            <div class="card">
+                <div class="card-header">💡 Projects</div>
+                <div class="card-body">
+                    {% for project in student.projects %}
+                    <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+                        <div style="font-weight:700">{{ project.title }}</div>
+                        <div style="font-size:0.8rem;color:var(--text-muted)">🛠 {{ project.tech }}</div>
+                        <div style="font-size:0.8rem;color:var(--text-muted)">👤 Guide: {{ project.guide }}</div>
+                        <span class="badge badge-blue">{{ project.get('status','Completed') }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="card">
+                <div class="card-header">🏢 Internships & Activities</div>
+                <div class="card-body">
+                    <strong style="font-size:0.8rem;color:var(--text-muted);text-transform:uppercase">Internships</strong>
+                    {% for intern in student.internships %}
+                    <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+                        <div style="font-weight:700">{{ intern.company }}</div>
+                        <div style="font-size:0.8rem;color:var(--text-muted)">{{ intern.role }} | {{ intern.duration }} ({{ intern.year }})</div>
+                    </div>
+                    {% endfor %}
+                    <strong style="font-size:0.8rem;color:var(--text-muted);text-transform:uppercase;margin-top:12px;display:block">Activities</strong>
+                    {% for act in student.activities %}
+                    <div style="padding:8px 0">
+                        <span class="badge badge-purple">{{ act.level }}</span>
+                        <span style="font-size:0.85rem;margin-left:8px;font-weight:600">{{ act.name }}</span>
+                        <span style="font-size:0.8rem;color:var(--text-muted)"> – {{ act.position }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

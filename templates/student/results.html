@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block title %}Results – BCOE{% endblock %}
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-label">Navigation</li>
+            <li><a href="{{ url_for('student.dashboard') }}"><span class="icon">🏠</span> Dashboard</a></li>
+            <li><a href="{{ url_for('student.profile') }}"><span class="icon">👤</span> Profile</a></li>
+            <li><a href="{{ url_for('student.results') }}" class="active"><span class="icon">📊</span> Results</a></li>
+            <li><a href="{{ url_for('student.attendance') }}"><span class="icon">📈</span> Attendance</a></li>
+            <li><a href="{{ url_for('student.timetable') }}"><span class="icon">📅</span> Timetable</a></li>
+            <li><a href="{{ url_for('student.result_pdf') }}"><span class="icon">📄</span> Download PDF</a></li>
+            <li><a href="{{ url_for('main.logout') }}" style="color:#f87171"><span class="icon">🚪</span> Logout</a></li>
+        </ul>
+    </aside>
+    <div class="main-content">
+        <div class="flex justify-between items-center mb-3" style="flex-wrap:wrap;gap:12px">
+            <div>
+                <div class="page-title">📊 Academic Results</div>
+                <div class="page-subtitle">{{ student.name }} | {{ student.roll_number }} | Overall CGPA: <strong>{{ student.cgpa }}</strong></div>
+            </div>
+            <a href="{{ url_for('student.result_pdf') }}" class="btn btn-blue">📄 Download PDF</a>
+        </div>
+
+        <!-- CGPA Stat -->
+        <div class="grid-3 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon blue">🎯</div>
+                <div class="stat-info"><div class="value">{{ student.cgpa }}</div><div class="label">Overall CGPA</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">📚</div>
+                <div class="stat-info"><div class="value">{{ student.results|length }}</div><div class="label">Semesters Completed</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">📝</div>
+                <div class="stat-info">
+                    {% set best = student.results|sort(attribute='sgpa')|last if student.results else None %}
+                    <div class="value">{{ best.sgpa if best else 'N/A' }}</div>
+                    <div class="label">Best SGPA</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Internal Marks -->
+        {% if student.internal_marks %}
+        <div class="card mb-3">
+            <div class="card-header">📝 Current Semester Internal Assessment Marks</div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Subject</th><th>IA-1 (20)</th><th>IA-2 (20)</th><th>Assignment (10)</th><th>Total (50)</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for subject, marks in student.internal_marks.items() %}
+                            {% set total = marks.get('IA1',0) + marks.get('IA2',0) + marks.get('assignment',0) %}
+                            <tr>
+                                <td><strong>{{ subject }}</strong></td>
+                                <td>{{ marks.get('IA1', '-') }}</td>
+                                <td>{{ marks.get('IA2', '-') }}</td>
+                                <td>{{ marks.get('assignment', '-') }}</td>
+                                <td><span class="badge {% if total >= 40 %}badge-green{% elif total >= 30 %}badge-yellow{% else %}badge-red{% endif %}">{{ total }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Semester Results -->
+        {% for result in student.results|sort(attribute='semester') %}
+        <div class="card mb-3">
+            <div class="card-header">
+                Semester {{ result.semester }} (Year {{ result.year }})
+                <span style="margin-left:auto;font-size:1rem">SGPA: {{ result.sgpa }}</span>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr><th>Subject</th><th>Credits</th><th>Marks (100)</th><th>Grade</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for sub in result.subjects %}
+                            <tr>
+                                <td><strong>{{ sub.name }}</strong></td>
+                                <td>{{ sub.credits }}</td>
+                                <td>{{ sub.marks }}</td>
+                                <td><span class="badge badge-blue">{{ sub.grade }}</span></td>
+                                <td>
+                                    {% if sub.marks >= 40 %}
+                                    <span class="badge badge-green">✅ Pass</span>
+                                    {% else %}
+                                    <span class="badge badge-red">❌ Fail</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="card"><div class="card-body text-center" style="padding:40px">No results available yet. Contact admin.</div></div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

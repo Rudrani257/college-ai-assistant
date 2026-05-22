@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Edit Student – Admin{% endblock %}
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-label">Admin Panel</li>
+            <li><a href="{{ url_for('admin.dashboard') }}"><span class="icon">⚡</span> Dashboard</a></li>
+            <li><a href="{{ url_for('admin.students') }}" class="active"><span class="icon">🎓</span> Students</a></li>
+            <li><a href="{{ url_for('admin.add_student') }}"><span class="icon">➕</span> Add Student</a></li>
+            <a href="{{ url_for('admin.edit_attendance', student_id=student.student_id) }}" class="btn btn-green">📊 Manage Attendance</a>
+            <li><a href="{{ url_for('admin.chatbot_qa') }}"><span class="icon">🤖</span> Chatbot Q&A</a></li>
+            <li><a href="{{ url_for('main.logout') }}" style="color:#f87171"><span class="icon">🚪</span> Logout</a></li>
+        </ul>
+    </aside>
+    <div class="main-content">
+        <div class="page-title">✏️ Edit Student: {{ student.name }}</div>
+        <div class="page-subtitle">{{ student.student_id }} | {{ student.roll_number }}</div>
+
+        <div class="grid-2">
+            <!-- EDIT BASIC INFO -->
+            <div class="card">
+                <div class="card-header">👤 Basic Information</div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for('admin.edit_student', student_id=student.student_id) }}">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" name="name" value="{{ student.name }}" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" value="{{ student.email }}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone</label>
+                            <input type="text" name="phone" value="{{ student.phone }}" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Year</label>
+                            <select name="year" class="form-control">
+                                {% for y in range(1,5) %}
+                                <option value="{{ y }}" {% if student.year == y %}selected{% endif %}>Year {{ y }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Semester</label>
+                            <select name="semester" class="form-control">
+                                {% for s in range(1,9) %}
+                                <option value="{{ s }}" {% if student.semester == s %}selected{% endif %}>Semester {{ s }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">CGPA</label>
+                            <input type="number" name="cgpa" value="{{ student.cgpa }}" class="form-control" step="0.01" min="0" max="10">
+                        </div>
+                        <a href="{{ url_for('admin.edit_attendance', student_id=student.student_id) }}" class="btn btn-green" style="margin-top:10px;"> 📊 Manage Attendance</a>
+                        <div class="form-group">
+                            <label class="form-label">Class Section</label>
+                            <input type="text" name="timetable_class" value="{{ student.timetable_class }}" class="form-control">
+                        </div>
+                        <button type="submit" class="btn btn-blue">💾 Update Student</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- STUDENT OVERVIEW -->
+            <div>
+                <div class="card mb-2">
+                    <div class="card-header">📊 Current Statistics</div>
+                    <div class="card-body">
+                        <div class="info-row"><span class="info-label">CGPA</span><span class="info-value">{{ student.cgpa }}</span></div>
+                        <div class="info-row"><span class="info-label">Results</span><span class="info-value">{{ student.results|length }} semesters</span></div>
+                        <div class="info-row"><span class="info-label">Projects</span><span class="info-value">{{ student.projects|length }}</span></div>
+                        <div class="info-row"><span class="info-label">Internships</span><span class="info-value">{{ student.internships|length }}</span></div>
+                        <div class="info-row"><span class="info-label">Activities</span><span class="info-value">{{ student.activities|length }}</span></div>
+                    </div>
+                </div>
+
+                <!-- ADD RESULT FORM -->
+                <div class="card">
+                    <div class="card-header">📊 Add Semester Result</div>
+                    <div class="card-body">
+                        <p style="font-size:0.82rem;color:var(--text-muted);margin-bottom:12px">Enter subjects as JSON array. Example:<br><code>[{"name":"DBMS","credits":4,"marks":78,"grade":"B+"}]</code></p>
+                        <form method="POST" action="{{ url_for('admin.add_result', student_id=student.student_id) }}">
+                            <div class="form-group">
+                                <label class="form-label">Year</label>
+                                <input type="number" name="year" class="form-control" value="3" min="1" max="4">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Semester</label>
+                                <input type="number" name="semester" class="form-control" value="5" min="1" max="8">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">SGPA</label>
+                                <input type="number" name="sgpa" class="form-control" step="0.01" min="0" max="10" placeholder="8.5">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Subjects JSON</label>
+                                <textarea name="subjects_json" class="form-control" rows="4" placeholder='[{"name":"Subject","credits":4,"marks":75,"grade":"B+"}]'></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-green btn-sm">➕ Add Result</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top:16px">
+            <a href="{{ url_for('admin.students') }}" class="btn btn-outline" style="color:var(--text);border-color:var(--border)">← Back to Students</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

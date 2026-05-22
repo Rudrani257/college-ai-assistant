@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BCOE - College AI Assistant{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <a href="{{ url_for('main.index') }}" class="navbar-brand">
+        <div class="logo">R</div>
+        <div class="brand-text">
+            <h1>BCOE</h1>
+            <span>Bharat College of Engineering</span>
+        </div>
+    </a>
+
+    <ul class="navbar-nav">
+        {% if session.get('role') == 'student' %}
+            <li><a href="{{ url_for('student.dashboard') }}">🏠 Dashboard</a></li>
+            <li><a href="{{ url_for('student.profile') }}">👤 Profile</a></li>
+            <li><a href="{{ url_for('student.results') }}">📊 Results</a></li>
+            <li><a href="{{ url_for('student.timetable') }}">📅 Timetable</a></li>
+            <li><a href="{{ url_for('main.logout') }}" style="color:#fca5a5">🚪 Logout</a></li>
+        {% elif session.get('role') == 'admin' %}
+            <li><a href="{{ url_for('admin.dashboard') }}">⚡ Admin Panel</a></li>
+            <li><a href="{{ url_for('main.logout') }}" style="color:#fca5a5">🚪 Logout</a></li>
+        {% else %}
+            <li><a href="{{ url_for('main.index') }}">🏠 Home</a></li>
+            <li><a href="{{ url_for('main.login') }}">🔑 Login</a></li>
+        {% endif %}
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">
+            <span id="theme-icon">🌙</span>
+        </button>
+    </ul>
+</nav>
+
+<!-- FLASH MESSAGES -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        <div style="position:fixed;top:72px;right:16px;z-index:9000;max-width:400px">
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" data-autodismiss style="transition:all 0.3s ease">
+                {{ message|safe }}
+            </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endwith %}
+
+{% block content %}{% endblock %}
+
+<!-- CHATBOT WIDGET (visible on all pages) -->
+{% if session.get('role') != 'admin' %}
+<div id="chatbot-launcher">
+    <span class="chat-label" id="chat-label" style="display:none">💬 Ask about RCOEM!</span>
+    <button class="chat-toggle-btn" onclick="toggleChat()" id="chat-toggle-btn" title="Open AI Assistant">
+        <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+        <span class="chat-badge">AI</span>
+    </button>
+</div>
+
+<div id="chat-window">
+    <div class="chat-header">
+        <div class="chat-header-info">
+            <div class="chat-avatar">🎓</div>
+            <div class="chat-header-text">
+                <h4>BCOE Assistant</h4>
+                <span><div class="online-dot"></div> Online – Ready to help</span>
+            </div>
+        </div>
+        <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+    </div>
+
+    <!-- Quick Topic Chips -->
+    <div class="chat-chips">
+        <span class="chip" onclick="sendChipQuery('courses offered')">📚 Courses</span>
+        <span class="chip" onclick="sendChipQuery('fee structure')">💰 Fees</span>
+        <span class="chip" onclick="sendChipQuery('admission procedure')">📋 Admission</span>
+        <span class="chip" onclick="sendChipQuery('placement statistics')">🏆 Placements</span>
+        <span class="chip" onclick="sendChipQuery('hostel facilities')">🏠 Hostel</span>
+        <span class="chip" onclick="sendChipQuery('scholarships available')">🎓 Scholarships</span>
+        <span class="chip" onclick="sendChipQuery('contact details')">📞 Contact</span>
+        <span class="chip" onclick="sendChipQuery('NAAC NIRF ranking')">🏅 Rankings</span>
+    </div>
+
+    <div class="chat-messages" id="chat-messages"></div>
+
+    <div class="chat-input-area">
+        <textarea class="chat-input" id="chat-input" placeholder="Ask about courses, fees, admissions..." rows="1"></textarea>
+        <button class="chat-send-btn" onclick="sendChatMessage()">
+            <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+    </div>
+</div>
+{% endif %}
+
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

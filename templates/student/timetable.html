@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Timetable – BCOE{% endblock %}
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-label">Navigation</li>
+            <li><a href="{{ url_for('student.dashboard') }}"><span class="icon">🏠</span> Dashboard</a></li>
+            <li><a href="{{ url_for('student.profile') }}"><span class="icon">👤</span> Profile</a></li>
+            <li><a href="{{ url_for('student.results') }}"><span class="icon">📊</span> Results</a></li>
+            <li><a href="{{ url_for('student.attendance') }}"><span class="icon">📈</span> Attendance</a></li>
+            <li><a href="{{ url_for('student.timetable') }}" class="active"><span class="icon">📅</span> Timetable</a></li>
+            <li><a href="{{ url_for('main.logout') }}" style="color:#f87171"><span class="icon">🚪</span> Logout</a></li>
+        </ul>
+    </aside>
+    <div class="main-content">
+        <div class="page-title">📅 Class Timetable</div>
+        <div class="page-subtitle">{{ student.name }} | Class: {{ student.timetable_class }} | Semester {{ student.semester }}</div>
+
+        {% if timetable %}
+            {% set days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'] %}
+            {% for day in days %}
+                {% if timetable.schedule.get(day) %}
+                <div class="card mb-2">
+                    <div class="card-header">📆 {{ day }}</div>
+                    <div class="card-body">
+                        {% for slot in timetable.schedule[day] %}
+                        {% set is_break = 'Break' in slot.subject or 'Lunch' in slot.subject %}
+                        <div class="timetable-slot {% if is_break %}break{% elif 'Library' in slot.subject or 'Sports' in slot.subject %}lunch{% endif %}">
+                            <span class="timetable-time">{{ slot.time }}</span>
+                            {% if not is_break %}
+                            &nbsp;|&nbsp;
+                            <span class="timetable-subject">{{ slot.subject }}</span>
+                            {% if slot.faculty %}
+                            &nbsp;—&nbsp;<span class="timetable-faculty">{{ slot.faculty }}</span>
+                            {% endif %}
+                            {% if slot.room %}
+                            &nbsp;|&nbsp;<span class="timetable-faculty">📍 {{ slot.room }}</span>
+                            {% endif %}
+                            {% else %}
+                            &nbsp;|&nbsp;<span style="color:var(--text-muted)">{{ slot.subject }}</span>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+        <div class="card"><div class="card-body text-center" style="padding:40px">Timetable not found for your class. Contact admin.</div></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

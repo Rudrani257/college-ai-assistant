@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Edit Chatbot Q&A</h2>
+
+```
+<form method="POST">
+
+    <label>Category:</label><br>
+    <input type="text" name="category" value="{{ qa.category }}"><br><br>
+
+    <label>Keywords:</label><br>
+    <input type="text" name="keywords" value="{{ qa.keywords | join(', ') }}"><br><br>
+
+    <label>Question:</label><br>
+    <input type="text" name="question" value="{{ qa.question }}"><br><br>
+
+    <label>Answer:</label><br>
+    <textarea name="answer">{{ qa.answer }}</textarea><br><br>
+
+    <label>Priority:</label><br>
+    <input type="number" name="priority" value="{{ qa.priority }}"><br><br>
+
+    <button type="submit">Update</button>
+
+</form>
+```
+
+</div>
+{% endblock %}

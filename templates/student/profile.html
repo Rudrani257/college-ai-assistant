@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Profile – BCOE{% endblock %}
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-label">Navigation</li>
+            <li><a href="{{ url_for('student.dashboard') }}"><span class="icon">🏠</span> Dashboard</a></li>
+            <li><a href="{{ url_for('student.profile') }}" class="active"><span class="icon">👤</span> Profile</a></li>
+            <li><a href="{{ url_for('student.results') }}"><span class="icon">📊</span> Results</a></li>
+            <li><a href="{{ url_for('student.attendance') }}"><span class="icon">📈</span> Attendance</a></li>
+            <li><a href="{{ url_for('student.timetable') }}"><span class="icon">📅</span> Timetable</a></li>
+            <li><a href="{{ url_for('main.logout') }}" style="color:#f87171"><span class="icon">🚪</span> Logout</a></li>
+        </ul>
+    </aside>
+    <div class="main-content">
+        <div class="profile-header">
+            <div class="profile-avatar">{{ student.name[0] }}</div>
+            <div>
+                <h2 style="font-size:1.6rem;font-weight:800">{{ student.name }}</h2>
+                <p style="color:#bfdbfe">{{ student.roll_number }} | {{ student.branch }}</p>
+                <p style="color:#93c5fd;font-size:0.875rem">Year {{ student.year }} | Semester {{ student.semester }} | CGPA: {{ student.cgpa }}</p>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">👤 Personal Information</div>
+                <div class="card-body">
+                    <div class="info-row"><span class="info-label">Full Name</span><span class="info-value">{{ student.name }}</span></div>
+                    <div class="info-row"><span class="info-label">Roll Number</span><span class="info-value">{{ student.roll_number }}</span></div>
+                    <div class="info-row"><span class="info-label">Student ID</span><span class="info-value">{{ student.student_id }}</span></div>
+                    <div class="info-row"><span class="info-label">Date of Birth</span><span class="info-value">{{ student.dob }}</span></div>
+                    <div class="info-row"><span class="info-label">Father's Name</span><span class="info-value">{{ student.father_name }}</span></div>
+                    <div class="info-row"><span class="info-label">Address</span><span class="info-value">{{ student.address }}</span></div>
+                    <div class="info-row"><span class="info-label">Email</span><span class="info-value">{{ student.email }}</span></div>
+                    <div class="info-row"><span class="info-label">Phone</span><span class="info-value">{{ student.phone }}</span></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">🎓 Academic Information</div>
+                <div class="card-body">
+                    <div class="info-row"><span class="info-label">Branch</span><span class="info-value">{{ student.branch }}</span></div>
+                    <div class="info-row"><span class="info-label">Current Year</span><span class="info-value">Year {{ student.year }}</span></div>
+                    <div class="info-row"><span class="info-label">Current Semester</span><span class="info-value">Semester {{ student.semester }}</span></div>
+                    <div class="info-row"><span class="info-label">Class Section</span><span class="info-value">{{ student.timetable_class }}</span></div>
+                    <div class="info-row"><span class="info-label">CGPA</span><span class="info-value"><strong style="color:var(--primary);font-size:1.1rem">{{ student.cgpa }}</strong></span></div>
+                    <div class="info-row"><span class="info-label">Semesters Done</span><span class="info-value">{{ student.results|length }}</span></div>
+                </div>
+            </div>
+
+            <!-- Fee Status -->
+            <div class="card">
+                <div class="card-header">💰 Fee Payment Status</div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table>
+                            <thead><tr><th>Semester</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
+                            <tbody>
+                                {% for fee in student.fee_status %}
+                                <tr>
+                                    <td>Sem {{ fee.semester }}</td>
+                                    <td>₹{{ "{:,}".format(fee.amount) }}</td>
+                                    <td><span class="badge {% if fee.paid %}badge-green{% else %}badge-red{% endif %}">{% if fee.paid %}✅ Paid{% else %}❌ Pending{% endif %}</span></td>
+                                    <td>{{ fee.date if fee.paid else '-' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Extra Curricular -->
+            <div class="card">
+                <div class="card-header">🏆 Extra-Curricular Activities</div>
+                <div class="card-body">
+                    {% for act in student.activities %}
+                    <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+                        <div style="font-weight:700">{{ act.name }}</div>
+                        <div style="font-size:0.85rem;color:var(--text-muted)">{{ act.position }} | <span class="badge badge-purple">{{ act.level }}</span></div>
+                    </div>
+                    {% else %}
+                    <p style="color:var(--text-muted)">No activities recorded.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

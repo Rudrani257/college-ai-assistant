@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard – BCOE{% endblock %}
+{% block content %}
+<div class="app-layout">
+    <!-- ADMIN SIDEBAR -->
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-label">Admin Panel</li>
+            <li><a href="{{ url_for('admin.dashboard') }}" class="active"><span class="icon">⚡</span> Dashboard</a></li>
+            <li><a href="{{ url_for('admin.students') }}"><span class="icon">🎓</span> Students</a></li>
+            <li><a href="{{ url_for('admin.add_student') }}"><span class="icon">➕</span> Add Student</a></li>
+            <li class="menu-label">Content</li>
+            <li><a href="{{ url_for('admin.chatbot_qa') }}"><span class="icon">🤖</span> Chatbot Q&A</a></li>
+            <li><a href="{{ url_for('admin.notifications') }}"><span class="icon">🔔</span> Notifications</a></li>
+            <li><a href="{{ url_for('admin.faculty') }}"><span class="icon">👨‍🏫</span> Faculty</a></li>
+            <li><a href="{{ url_for('admin.events') }}"><span class="icon">🎉</span> Events</a></li>
+            <li><a href="{{ url_for('admin.timetable') }}"><span class="icon">📅</span> Timetables</a></li>
+            <li class="menu-label">Account</li>
+            <li><a href="{{ url_for('main.logout') }}" style="color:#f87171"><span class="icon">🚪</span> Logout</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-content">
+        <div class="page-title">⚡ Admin Dashboard</div>
+        <div class="page-subtitle">Welcome, {{ session.admin_name }} | Super Admin</div>
+
+        <!-- STATS -->
+        <div class="grid-4 mb-3">
+            <div class="stat-card">
+                <div class="stat-icon blue">🎓</div>
+                <div class="stat-info"><div class="value">{{ total_students }}</div><div class="label">Total Students</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">🤖</div>
+                <div class="stat-info"><div class="value">{{ total_qa }}</div><div class="label">Chatbot Q&A Entries</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange">🎉</div>
+                <div class="stat-info"><div class="value">{{ total_events }}</div><div class="label">Events</div></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple">🔔</div>
+                <div class="stat-info"><div class="value">{{ total_notifications }}</div><div class="label">Notifications Sent</div></div>
+            </div>
+        </div>
+
+        <!-- QUICK ACTIONS -->
+        <div class="card mb-3">
+            <div class="card-header">🚀 Quick Actions</div>
+            <div class="card-body" style="display:flex;flex-wrap:wrap;gap:10px">
+                <a href="{{ url_for('admin.add_student') }}" class="btn btn-blue">➕ Add Student</a>
+                <a href="{{ url_for('admin.chatbot_qa') }}" class="btn btn-green">🤖 Manage Chatbot</a>
+                <a href="{{ url_for('admin.notifications') }}" class="btn btn-blue">🔔 Send Notification</a>
+                <a href="{{ url_for('admin.events') }}" class="btn btn-green">🎉 Add Event</a>
+                <a href="{{ url_for('admin.timetable') }}" class="btn btn-blue">📅 Edit Timetable</a>
+                <a href="{{ url_for('admin.faculty') }}" class="btn btn-primary">👨‍🏫 Manage Faculty</a>
+                
+            </div>
+        </div>
+
+        <!-- RECENT STUDENTS -->
+        <div class="card">
+            <div class="card-header">🎓 Recently Added Students</div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>Name</th><th>Student ID</th><th>Roll No</th><th>Branch</th><th>Year/Sem</th><th>CGPA</th><th>Actions</th></tr></thead>
+                        <tbody>
+                            {% for student in recent_students %}
+                            <tr>
+                                <td><strong>{{ student.name }}</strong></td>
+                                <td><code>{{ student.student_id }}</code></td>
+                                <td>{{ student.roll_number }}</td>
+                                <td>{{ student.branch }}</td>
+                                <td>Y{{ student.year }}/S{{ student.semester }}</td>
+                                <td><span class="badge badge-blue">{{ student.cgpa }}</span></td>
+                                <td>
+                                    <a href="{{ url_for('admin.edit_student', student_id=student.student_id) }}" class="btn btn-blue btn-xs">✏️ Edit</a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div style="margin-top:12px"><a href="{{ url_for('admin.students') }}" class="btn btn-blue btn-sm">View All Students →</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

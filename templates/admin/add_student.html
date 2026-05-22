@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block title %}Add Student – Admin{% endblock %}
+{% block content %}
+<div class="app-layout">
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-label">Admin Panel</li>
+            <li><a href="{{ url_for('admin.dashboard') }}"><span class="icon">⚡</span> Dashboard</a></li>
+            <li><a href="{{ url_for('admin.students') }}"><span class="icon">🎓</span> Students</a></li>
+            <li><a href="{{ url_for('admin.add_student') }}" class="active"><span class="icon">➕</span> Add Student</a></li>
+            <li><a href="{{ url_for('admin.chatbot_qa') }}"><span class="icon">🤖</span> Chatbot Q&A</a></li>
+            <li><a href="{{ url_for('admin.notifications') }}"><span class="icon">🔔</span> Notifications</a></li>
+            <li><a href="{{ url_for('main.logout') }}" style="color:#f87171"><span class="icon">🚪</span> Logout</a></li>
+        </ul>
+    </aside>
+    <div class="main-content">
+        <div class="page-title">➕ Add New Student</div>
+        <div class="page-subtitle">Password will be auto-generated. Share it with the student.</div>
+
+        <div class="card">
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin.add_student') }}">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Student ID (Login ID) *</label>
+                            <input type="text" name="student_id" class="form-control" placeholder="e.g. STU002" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Full Name *</label>
+                            <input type="text" name="name" class="form-control" placeholder="Full name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Roll Number *</label>
+                            <input type="text" name="roll_number" class="form-control" placeholder="e.g. 21BCE002" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Branch *</label>
+                            <select name="branch" class="form-control" required>
+                                <option value="">Select Branch</option>
+                                <option>Computer Engineering</option>
+                                <option>Information Technology</option>
+                                <option>Electronics & Communication</option>
+                                <option>Mechanical Engineering</option>
+                                <option>Civil Engineering</option>
+                                <option>Electrical Engineering</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Year</label>
+                            <select name="year" class="form-control">
+                                <option value="1">Year 1</option>
+                                <option value="2">Year 2</option>
+                                <option value="3" selected>Year 3</option>
+                                <option value="4">Year 4</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Semester</label>
+                            <select name="semester" class="form-control">
+                                {% for i in range(1, 9) %}
+                                <option value="{{ i }}" {% if i == 5 %}selected{% endif %}>Semester {{ i }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" class="form-control" placeholder="student@college.edu">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Phone</label>
+                            <input type="text" name="phone" class="form-control" placeholder="10-digit phone number">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Father's Name</label>
+                            <input type="text" name="father_name" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" name="dob" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Class/Section (for timetable)</label>
+                            <input type="text" name="timetable_class" class="form-control" placeholder="e.g. CE-A">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Address</label>
+                            <input type="text" name="address" class="form-control">
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:12px;margin-top:8px">
+                        <button type="submit" class="btn btn-green">✅ Add Student (Auto-generate Password)</button>
+                        <a href="{{ url_for('admin.students') }}" class="btn btn-outline" style="color:var(--text);border-color:var(--border)">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

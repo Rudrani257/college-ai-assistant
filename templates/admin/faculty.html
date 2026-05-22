@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2>👨‍🏫 Faculty Management</h2>
+
+```
+<!-- ADD FORM -->
+<form method="POST" action="{{ url_for('admin.add_faculty') }}">
+    <input name="name" placeholder="Name" required>
+    <input name="department" placeholder="Department">
+    <input name="designation" placeholder="Designation">
+    <input name="email" placeholder="Email">
+    <input name="phone" placeholder="Phone">
+    <button type="submit">Add</button>
+</form>
+
+<hr>
+
+<!-- LIST -->
+{% for f in faculty_list %}
+<div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+    <b>{{ f.name }}</b> - {{ f.designation }} <br>
+    {{ f.department }} <br>
+    {{ f.email }} | {{ f.phone }} <br><br>
+
+    <a href="{{ url_for('admin.edit_faculty', id=f._id) }}">Edit</a>
+
+    <form method="POST" action="{{ url_for('admin.delete_faculty', id=f._id) }}" style="display:inline;">
+        <button type="submit">Delete</button>
+    </form>
+</div>
+{% endfor %}
+```
+
+</div>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Chatbot Q&A – Admin{% endblock %}
+{% block content %}
+
+<div class="app-layout">
+    <aside class="sidebar">
+        <ul class="sidebar-menu">
+            <li class="menu-label">Admin Panel</li>
+            <li><a href="{{ url_for('admin.dashboard') }}"><span class="icon">⚡</span> Dashboard</a></li>
+            <li><a href="{{ url_for('admin.students') }}"><span class="icon">🎓</span> Students</a></li>
+            <li><a href="{{ url_for('admin.chatbot_qa') }}" class="active"><span class="icon">🤖</span> Chatbot Q&A</a></li>
+            <li><a href="{{ url_for('admin.notifications') }}"><span class="icon">🔔</span> Notifications</a></li>
+            <li><a href="{{ url_for('admin.events') }}"><span class="icon">🎉</span> Events</a></li>
+            <li><a href="{{ url_for('main.logout') }}" style="color:#f87171"><span class="icon">🚪</span> Logout</a></li>
+        </ul>
+    </aside>
+
+```
+<div class="main-content">
+    <div class="page-title">🤖 Chatbot Q&A Management</div>
+    <div class="page-subtitle">Add, edit or deactivate chatbot questions and answers</div>
+
+    <!-- ADD NEW Q&A FORM -->
+    <div class="card mb-3">
+        <div class="card-header">➕ Add New Q&A Entry</div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('admin.add_qa') }}">
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <input type="text" name="category" class="form-control" placeholder="e.g. admissions, fees, placements" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <input type="number" name="priority" class="form-control" value="1">
+                    </div>
+
+                    <div class="form-group" style="grid-column:1/-1">
+                        <label class="form-label">Keywords</label>
+                        <input type="text" name="keywords" class="form-control" placeholder="comma separated" required>
+                    </div>
+
+                    <div class="form-group" style="grid-column:1/-1">
+                        <label class="form-label">Question</label>
+                        <input type="text" name="question" class="form-control" required>
+                    </div>
+
+                    <div class="form-group" style="grid-column:1/-1">
+                        <label class="form-label">Answer</label>
+                        <textarea name="answer" class="form-control" rows="4" required></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-green">➕ Add</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Q&A LIST -->
+    <div class="card">
+        <div class="card-header">📋 All Q&A Entries ({{ qa_list|length }})</div>
+        <div class="card-body">
+
+            {% for qa in qa_list %}
+            <div style="padding:16px;border:1px solid var(--border);border-radius:10px;margin-bottom:12px;background:var(--bg)">
+                
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+
+                    <div>
+                        <span class="badge badge-blue">{{ qa.category }}</span>
+                        <span class="badge {% if qa.active %}badge-green{% else %}badge-red{% endif %}">
+                            {% if qa.active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </div>
+
+                    <div style="display:flex;gap:8px">
+
+                        <!-- EDIT BUTTON -->
+                        <a href="{{ url_for('admin.edit_chatbot', id=qa._id) }}" 
+                           class="btn btn-green btn-xs">
+                           ✏️ Edit
+                        </a>
+
+                        <!-- TOGGLE -->
+                        <form method="POST" action="{{ url_for('admin.toggle_qa', qa_id=qa._id) }}">
+                            <button type="submit" class="btn btn-blue btn-xs">
+                                {% if qa.active %}Deactivate{% else %}Activate{% endif %}
+                            </button>
+                        </form>
+
+                        <!-- DELETE -->
+                        <form method="POST" action="{{ url_for('admin.delete_qa', qa_id=qa._id) }}" id="qa_{{ qa._id }}">
+                            <button type="button" class="btn btn-red btn-xs"
+                                onclick="confirmDelete('qa_{{ qa._id }}', '{{ qa.question }}')">
+                                🗑 Delete
+                            </button>
+                        </form>
+
+                    </div>
+                </div>
+
+                <div style="font-weight:700;margin-bottom:5px">
+                    ❓ {{ qa.question }}
+                </div>
+
+                <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:5px">
+                    🔑 {{ qa.keywords|join(', ') }}
+                </div>
+
+                <div style="font-size:0.82rem;color:var(--text-muted)">
+                    {{ qa.answer|striptags|truncate(150) }}
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+    </div>
+
+</div>
+```
+
+</div>
+{% endblock %}

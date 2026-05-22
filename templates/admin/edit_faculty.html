@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Edit Faculty</h2>
+
+```
+<form method="POST">
+
+    <input name="name" value="{{ faculty.name }}"><br><br>
+    <input name="department" value="{{ faculty.department }}"><br><br>
+    <input name="designation" value="{{ faculty.designation }}"><br><br>
+    <input name="email" value="{{ faculty.email }}"><br><br>
+    <input name="phone" value="{{ faculty.phone }}"><br><br>
+
+    <button type="submit">Update</button>
+</form>
+```
+
+</div>
+{% endblock %}
